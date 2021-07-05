@@ -1,0 +1,72 @@
+﻿
+@{
+    ViewData["Title"] = "تماس با ما";
+}
+
+@model ContactUsViewModel
+<section class="contact-area pb-40">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-md-12">
+                <div class="contact-form">
+                    <h3>تماس با ما</h3>
+
+                    <form asp-action="contactusconfirm" asp-controller="post">
+                        <div class="row">
+                            <div class="col-lg-4">
+                                <div class="form-group">
+                                    <input type="text" asp-for="name" class="form-control" id="name" placeholder="نام شما *">
+                                    <div class="help-block with-errors"></div>
+                                    <span asp-validation-for="@Model.name"></span>
+                                </div>
+                            </div>
+
+                            <div class="col-lg-4">
+                                <div class="form-group">
+                                    <input type="email" class="form-control" asp-for="email" id="email" placeholder="ایمیل شما *">
+                                    <div class="help-block with-errors"></div>
+                                    <span asp-validation-for="@Model.email"></span>
+                                </div>
+                            </div>
+
+                            <div class="col-lg-4">
+                                <div class="form-group">
+                                    <input type="text" class="form-control" asp-for="subject" id="msg_subject" placeholder="موضوع*">
+                                    <div class="help-block with-errors"></div>
+                                    <span asp-validation-for="@Model.subject"></span>
+                                </div>
+                            </div>
+
+                            <div class="col-lg-12">
+                                <div class="form-group">
+                                    <textarea placeholder="پیام شما *" asp-for="content" id="message" class="form-control" cols="30" rows="10"></textarea>
+                                    <div class="help-block with-errors"></div>
+                                    <span asp-validation-for="@Model.content"></span>
+                                </div>
+                            </div>
+
+                            <div class="col-lg-12">
+                                <button type="submit" class="btn btn-primary disabled" style="pointer-events: all; cursor: pointer;">ارسال پیام</button>
+                                <div id="msgSubmit" class="h3 text-center hidden"></div>
+                                <div class="clearfix"></div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="col-lg-4 col-md-12">
+                <div class="contact-info">
+                    <h3>تماس بگیرید</h3>
+                    <p>لورم ایپسوم به سادگی ساختار چاپ و متن را در بر می گیرد. لورم ایپسوم به مدت 40 سال استاندارد صنعت بوده است. لورم ایپسوم به سادگی ساختار چاپ و متن را در بر می گیرد. لورم ایپسوم به مدت 40 سال استاندارد صنعت بوده است.</p>
+                    <ul>
+                        <li><i class="icofont-google-map"></i>  کشور شما ، استان و شهر شما ، محله سکونت</li>
+                        <li><i class="icofont-phone"></i> <a href="#">021-12345678</a></li>
+                        <li><i class="icofont-envelope"></i> <a href="#">admin@sinmun.com</a></li>
+                        <li><i class="icofont-ui-browser"></i> <a href="#">www.sinmun.com</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

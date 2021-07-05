@@ -1,0 +1,7 @@
+﻿
+@model List<Category>
+
+@foreach (var item in Model)
+{
+    <li class="nav-item"><a asp-action="showcategorybridge" asp-controller="home" asp-route-id="@item.id" class="nav-link">@item.Pname</a></li>
+}

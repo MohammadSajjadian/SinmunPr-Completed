@@ -1,0 +1,19 @@
+﻿
+@{
+    ViewData["Title"] = "درباره ما";
+}
+
+@model AboutUs
+<section class="news-details-area pb-40">
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <div class="news-details">
+                    <div class="article-content">
+                        @Html.Raw(Model.longAbout)
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

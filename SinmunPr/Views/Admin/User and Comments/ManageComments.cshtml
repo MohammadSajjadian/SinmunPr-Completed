@@ -1,0 +1,295 @@
+﻿
+@{
+    ViewData["Title"] = "مدیریت کامنت ها";
+}
+
+@model List<SubComment>
+
+<section class="news-details-area pb-40">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12 col-md-12">
+                <div class="news-details">
+                    <div class="comments-area">
+                        <div class="comment-respond">
+                            @if (Model.Count() != 0 || ViewBag.mainComments != 0)
+                            {
+                                <h3 style="margin-bottom:25px" class="comment-reply-title">لیست کامنت های تایید نشده</h3>
+                                <table class="table table-bordered table-striped table-responsive">
+                                    <thead>
+                                        <tr>
+                                            <td>#</td>
+                                            <th>کاربر</th>
+                                            <th>پست</th>
+                                            <th>متن کامنت</th>
+                                            <th>زمان</th>
+                                            <th>عملیات</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @if (ViewBag.mainComments != 0)
+                                        {
+                                            @foreach (var item in ViewData["mainCommentss"] as List<MainComment>)
+                                            {
+                                                <tr>
+                                                    <td>@item.id</td>
+                                                    @if (item.applicationUser.firstName != null && item.applicationUser.lastName != null)
+                                                    {
+                                                        <td>
+                                                            <a asp-action="ShowProfile" asp-controller="account" asp-route-id="@item.applicationUser.Id">@($"{item.applicationUser.firstName} {item.applicationUser.lastName}")</a>
+                                                        </td>
+                                                    }
+                                                    else
+                                                    {
+                                                        <td>
+                                                            <a asp-action="ShowProfile" asp-controller="account" asp-route-id="@item.applicationUser.Id">@item.applicationUser.UserName</a>
+                                                        </td>
+                                                    }
+                                                    <td><a asp-action="postshowbridge" asp-controller="post" asp-route-id="@item.post.id">@item.post.topic</a></td>
+                                                    <td style="white-space: pre-wrap">@item.content</td>
+                                                    <td>
+                                                        @{
+                                                            TimeSpan timespan = new TimeSpan();
+                                                            timespan = DateTime.Now - item.creationTime;
+
+                                                            if (timespan.Days >= 365)
+                                                            {
+                                                                <p>@($"{timespan.Days / 365} سال پیش")</p>
+                                                            }
+                                                            else
+                                                            {
+                                                                if (timespan.Days >= 30 && timespan.Days < 365)
+                                                                {
+                                                                    <p>@($"{timespan.Days / 30} ماه پیش")</p>
+                                                                }
+                                                                else
+                                                                {
+                                                                    if (timespan.Days >= 1 && timespan.Days < 30)
+                                                                    {
+                                                                        <p>@($"{timespan.Days} روز پیش")</p>
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        if (timespan.Hours >= 1 && timespan.Hours < 24)
+                                                                        {
+                                                                            <p>@($"{timespan.Hours} ساعت پیش")</p>
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            if (timespan.Minutes >= 1 && timespan.Minutes < 60)
+                                                                            {
+                                                                                <p>@($"{timespan.Minutes} دقیقه پیش")</p>
+                                                                            }
+                                                                            else
+                                                                            {
+                                                                                if (timespan.Seconds > 60 && timespan.Seconds >= 1)
+                                                                                {
+                                                                                    <p>@($"{timespan.Seconds} لحظاتی پیش")</p>
+                                                                                }
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                    </td>
+                                                    <td>
+                                                        <button id="maincommentdeletebtn" commentId="@item.id" class="btn btn-danger">حذف</button>
+                                                        <button id="maincommentconfirmbtn" commentId="@item.id" style="margin-right:10px"
+                                                                class="btn btn-success">
+                                                            تایید
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                            }
+                                        }
+
+                                        @if (Model.Count() != 0)
+                                        {
+                                            @foreach (var item in Model)
+                                            {
+                                                <tr>
+                                                    <td>@item.id</td>
+                                                    @if (item.applicationUser.firstName != null && item.applicationUser.lastName != null)
+                                                    {
+                                                        <td>
+                                                            <a asp-action="ShowProfile" asp-controller="account" asp-route-id="@item.applicationUser.Id" asp-route-pagenumber="1">@($"{item.applicationUser.firstName} {item.applicationUser.lastName}")</a>
+                                                        </td>
+                                                    }
+                                                    else
+                                                    {
+                                                        <td>
+                                                            <a asp-action="ShowProfile" asp-controller="account" asp-route-id="@item.applicationUser.Id" asp-route-pagenumber="1">@item.applicationUser.UserName</a>
+                                                        </td>
+                                                    }
+                                                    <td><a asp-action="postshowbridge" asp-controller="post" asp-route-id="@item.MainComment.post.id">@item.MainComment.post.topic</a></td>
+                                                    <td style="white-space: pre-wrap">@item.content</td>
+                                                    <td>
+                                                        @{
+                                                            TimeSpan timespan = new TimeSpan();
+                                                            timespan = DateTime.Now - item.creationTime;
+
+                                                            if (timespan.Days >= 365)
+                                                            {
+                                                                <p>@($"{timespan.Days / 365} سال پیش")</p>
+                                                            }
+                                                            else
+                                                            {
+                                                                if (timespan.Days >= 30 && timespan.Days < 365)
+                                                                {
+                                                                    <p>@($"{timespan.Days / 30} ماه پیش")</p>
+                                                                }
+                                                                else
+                                                                {
+                                                                    if (timespan.Days >= 1 && timespan.Days < 30)
+                                                                    {
+                                                                        <p>@($"{timespan.Days} روز پیش")</p>
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        if (timespan.Hours >= 1 && timespan.Hours < 24)
+                                                                        {
+                                                                            <p>@($"{timespan.Hours} ساعت پیش")</p>
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            if (timespan.Minutes >= 1 && timespan.Minutes < 60)
+                                                                            {
+                                                                                <p>@($"{timespan.Minutes} دقیقه پیش")</p>
+                                                                            }
+                                                                            else
+                                                                            {
+                                                                                if (timespan.Seconds > 60 && timespan.Seconds >= 1)
+                                                                                {
+                                                                                    <p>@($"{timespan.Seconds} لحظاتی پیش")</p>
+                                                                                }
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                    </td>
+                                                    <td>
+                                                        <button id="subcommentdeletebtn" commentId="@item.id" class="btn btn-danger">حذف</button>
+                                                        <button id="subcommentconfirmbtn" commentId="@item.id" style="margin-right:10px"
+                                                                class="btn btn-success">
+                                                            تایید
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                            }
+                                        }
+                                    </tbody>
+                                </table>
+                            }
+                            else
+                            {
+                                <h3 style="margin-bottom:25px" class="comment-reply-title">کامنت تایید نشده ای وجود ندارد!</h3>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<div class="modal fade" id="maincommentdeletemodal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header" style="background-color:red">
+                <h3>حذف کامنت</h3>
+            </div>
+            <div class="modal-body">
+                <p>آیا مایل به حذف کامنت هستید؟</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-danger" data-dismiss="modal">خیر</button>
+                <a href="" id="maincommentdelete" class="btn btn-success" style="margin-right:10px">بله</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="maincommentconfirmmodal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header" style="background-color:red">
+                <h3>تایید کامنت</h3>
+            </div>
+            <div class="modal-body">
+                <p>آیا مایل به تایید کامنت هستید؟</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-danger" data-dismiss="modal">خیر</button>
+                <a href="" id="maincommentconfirm" class="btn btn-success" style="margin-right:10px">بله</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="subcommentdeletemodal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header" style="background-color:red">
+                <h3>حذف کامنت</h3>
+            </div>
+            <div class="modal-body">
+                <p>آیا مایل به حذف کامنت هستید؟</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-danger" data-dismiss="modal">خیر</button>
+                <a href="" id="subcommentdelete" class="btn btn-success" style="margin-right:10px">بله</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="subcommentconfirmmodal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header" style="background-color:red">
+                <h3>تایید کامنت</h3>
+            </div>
+            <div class="modal-body">
+                <p>آیا مایل به تایید کامنت هستید؟</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-danger" data-dismiss="modal">خیر</button>
+                <a href="" id="subcommentconfirm" class="btn btn-success" style="margin-right:10px">بله</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(function () {
+        $(subcommentdeletebtn).click(function () {
+            var commentId = $(this).attr("commentId")
+
+            $(subcommentdeletemodal).modal()
+            $(subcommentdelete).attr("href", `/post/subcommentdelete?id=${commentId}`)
+        })
+
+        $(subcommentconfirmbtn).click(function () {
+            var commentId = $(this).attr("commentId")
+
+            $(subcommentconfirmmodal).modal()
+            $(subcommentconfirm).attr("href", `/post/subcommentconfirm?id=${commentId}`)
+        })
+    })
+
+    $(function () {
+        $(maincommentdeletebtn).click(function () {
+            var commentId = $(this).attr("commentId")
+
+            $(maincommentdeletemodal).modal()
+            $(maincommentdelete).attr("href", `/post/maincommentdelete?id=${commentId}`)
+        })
+
+        $(maincommentconfirmbtn).click(function () {
+            var commentId = $(this).attr("commentId")
+
+            $(maincommentconfirmmodal).modal()
+            $(maincommentconfirm).attr("href", `/post/maincommentconfirm?id=${commentId}`)
+        })
+    })
+</script>

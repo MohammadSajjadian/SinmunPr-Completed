@@ -1,0 +1,145 @@
+﻿
+@{
+    ViewData["Title"] = "صندوق پیام ها";
+}
+
+@model PagedResult<ContactUs>
+<section class="news-details-area pb-40">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12 col-md-12">
+                <div class="news-details">
+                    <div class="comments-area">
+                        @if (Model.TotalItems != 0)
+                        {
+                            <div class="comment-respond">
+                                <h3 style="margin-bottom:25px" class="comment-reply-title">پیام های دریافتی</h3>
+                                <table class="table table-bordered table-striped">
+                                    <thead>
+                                        <tr>
+                                            <td>#</td>
+                                            <th>نام</th>
+                                            <th>ایمیل</th>
+                                            <th>موضوع</th>
+                                            <th>پیغام</th>
+                                            <th>زمان</th>
+                                            <th>عملیات</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var item in Model.Data)
+                                        {
+                                            <tr>
+                                                <td>@item.id</td>
+                                                <td>@item.name</td>
+                                                <td><a href="mailto:@item.email">@item.email</a></td>
+                                                <td>@item.subject</td>
+                                                <td>@item.content</td>
+                                                <td>
+                                                    @{
+                                                        TimeSpan timespan = new();
+                                                        timespan = DateTime.Now - item.createTime;
+
+                                                        if (timespan.Days >= 365)
+                                                        {
+                                                            <p>@($"{timespan.Days / 365} سال پیش")</p>
+                                                        }
+                                                        else
+                                                        {
+                                                            if (timespan.Days >= 30 && timespan.Days < 365)
+                                                            {
+                                                                <p>@($"{timespan.Days / 30} ماه پیش")</p>
+                                                            }
+                                                            else
+                                                            {
+                                                                if (timespan.Days >= 1 && timespan.Days < 30)
+                                                                {
+                                                                    <p>@($"{timespan.Days} روز پیش")</p>
+                                                                }
+                                                                else
+                                                                {
+                                                                    if (timespan.Hours >= 1 && timespan.Hours < 24)
+                                                                    {
+                                                                        <p>@($"{timespan.Hours} ساعت پیش")</p>
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        if (timespan.Minutes >= 1 && timespan.Minutes < 60)
+                                                                        {
+                                                                            <p>@($"{timespan.Minutes} دقیقه پیش")</p>
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            if (timespan.Seconds > 60 && timespan.Seconds >= 1)
+                                                                            {
+                                                                                <p>@($"{timespan.Seconds} لحظاتی پیش")</p>
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                </td>
+                                                <td>
+                                                    <button id="inboxdeletebtn" inboxId="@item.id" class="btn btn-danger">حذف</button>
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                                <cs-pager asp-action="inbox" asp-controller="admin"
+                                          cs-pager-li-current-class="page-item active"
+                                          cs-pager-li-other-class="page-item"
+                                          cs-pager-li-non-active-class="page-item disabled"
+                                          cs-pager-link-current-class="page-link"
+                                          cs-pager-link-other-class="page-link"
+                                          cs-paging-pagenumber="@Model.PageNumber"
+                                          cs-paging-totalitems="@Model.TotalItems"
+                                          cs-paging-pagesize="@Model.PageSize"
+                                          asp-route-listId=""
+                                          asp-route-sortmode="">
+                                </cs-pager>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="comment-respond">
+                                <h3 style="margin-bottom:25px" class="comment-reply-title">پیغامی وجود ندارد!</h3>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<div class="modal fade" id="inboxdeletemodal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header" style="background-color:red">
+                <h3>حذف پیغام</h3>
+            </div>
+            <div class="modal-body">
+                <p>آیا مایل به حذف پیغام هستید؟</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-danger" data-dismiss="modal">خیر</button>
+                <a href="" id="inboxdeletebtnconfirm" class="btn btn-success" style="margin-right:10px">بله</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    $(function () {
+        $(inboxdeletebtn).click(function () {
+            var inboxId = $(this).attr("inboxId")
+
+            $(inboxdeletemodal).modal()
+            $(inboxdeletebtnconfirm).attr("href", `/post/inboxdelete?id=${inboxId}&pagenumber=${@Model.PageNumber}`)
+        })
+    })
+</script>

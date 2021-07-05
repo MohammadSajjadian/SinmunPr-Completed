@@ -1,0 +1,156 @@
+﻿
+@{
+    ViewData["Title"] = "مدیریت کاربران";
+}
+
+@model PagedResult<ApplicationUser>
+
+@inject RoleManager<IdentityRole> roleManager
+@inject UserManager<ApplicationUser> userManager
+
+<section class="news-details-area pb-40">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12 col-md-12">
+                <div class="news-details">
+                    <div class="comments-area">
+                        <div class="comment-respond">
+                            <h3 style="margin-bottom:25px" class="comment-reply-title">لیست کاربران</h3>
+                            <div>
+                                <label>تعداد کاربران فعال: <span id="activeusers">@Model.Data.Where(x => x.EmailConfirmed == true).Count()</span></label>
+                                <label>تعداد کاربران مسدود شده: <span id="banusers">@Model.Data.Where(x => x.EmailConfirmed == false).Count()</span></label>
+                                <label>تعداد کل کاربران: @Model.Data.Count()</label>
+                            </div>
+
+                            <hr />
+
+                            <h3 style="margin-bottom:25px" class="comment-reply-title">جستجو کاربر</h3>
+                            <form asp-action="searchuser" asp-controller="admin">
+                                <p style="margin-bottom:50px">
+                                    <label>نام کاربری</label>
+                                    <input name="username" type="text">
+                                </p>
+
+                                <p class="form-submit">
+                                    <input type="submit" class="submit" value="جست و جو">
+                                </p>
+                            </form>
+
+                            <table class="table table-bordered table-striped table-responsive">
+                                <thead>
+                                    <tr>
+                                        <td>#</td>
+                                        <th>آواتار</th>
+                                        <th>نام کاربری</th>
+                                        <th>نام</th>
+                                        <th>نام خانوادگی</th>
+                                        <th>تاریخ عضویت</th>
+                                        @foreach (var item in roleManager.Roles.ToList())
+                                        {
+                                            <th>@item.Name</th>
+                                        }
+                                        <th>اکانت مسدود</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in Model.Data)
+                                    {
+                                        <tr>
+                                            <td>@item.Id</td>
+
+                                            <td>
+                                                @if (item.smallAvatar != null)
+                                                {
+                                                    <img src="@($"data:image/jpeg;base64,{Convert.ToBase64String(item.smallAvatar)}")" />
+                                                }
+                                                else
+                                                {
+                                                    <img width="50" src="~/assets/img/user.png" />
+                                                }
+                                            </td>
+
+                                            <td><a asp-action="showprofile" asp-controller="account" asp-route-id="@item.Id" target="_blank">@item.UserName</a></td>
+
+                                            <td>@(item.firstName != null ? item.firstName : "-")</td>
+
+                                            <td>@(item.lastName != null ? item.lastName : "-")</td>
+
+                                            @{PersianCalendar persian = new();}
+                                            <td>@($"{persian.GetYear(item.accountCrationTime)}/{persian.GetMonth(item.accountCrationTime)}/{persian.GetDayOfMonth(item.accountCrationTime)}")</td>
+
+                                            @foreach (var item2 in roleManager.Roles.ToList())
+                                            {
+                                                <td>
+                                                    <input id="role" type="checkbox" userId="@item.Id" roleName="@item2.Name" @(await userManager.IsInRoleAsync(item, item2.Name) ? "checked" : "") />
+                                                </td>
+                                            }
+
+                                            <td>
+                                                <input id="ban" type="checkbox" userId="@item.Id" @(item.EmailConfirmed == false ? "checked" : "" ) />
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                            <cs-pager asp-action="manageusers" asp-controller="admin"
+                                      cs-pager-li-current-class="page-item active"
+                                      cs-pager-li-other-class="page-item"
+                                      cs-pager-li-non-active-class="page-item disabled"
+                                      cs-pager-link-current-class="page-link"
+                                      cs-pager-link-other-class="page-link"
+                                      cs-paging-pagenumber="@Model.PageNumber"
+                                      cs-paging-totalitems="@Model.TotalItems"
+                                      cs-paging-pagesize="@Model.PageSize"
+                                      asp-route-listId=""
+                                      asp-route-sortmode="">
+                            </cs-pager>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<script>
+    $(function () {
+        $(role).change(function () {
+
+            if ($(this).prop('checked') == true) {
+
+                $.post('/Account/AddUserToRole', { userId: $(this).attr("userId"), roleName: $(this).attr("roleName") }, function (value) {
+                    $(msg).html(value)
+                    $(msgmodal).modal()
+                })
+            } else {
+                $.post('/Account/RemoveUserFromRole', { userId: $(this).attr("userId"), roleName: $(this).attr("roleName") }, function (value) {
+                    $(msg).html(value)
+                    $(msgmodal).modal()
+                })
+            }
+        })
+    })
+
+    $(function () {
+        $(ban).change(function () {
+
+            if ($(this).prop('checked') == true) {
+
+                $.post('/Account/BanUser', { userId: $(this).attr("userId") }, function (value) {
+                    $(activeusers).html(value.activeUsers)
+                    $(banusers).html(value.banUsers)
+
+                    $(msg).html(value.msg)
+                    $(msgmodal).modal()
+                })
+            } else {
+                $.post('/Account/UnBanUser', { userId: $(this).attr("userId") }, function (value) {
+                    $(activeusers).html(value.activeUsers)
+                    $(banusers).html(value.banUsers)
+
+                    $(msg).html(value.msg)
+                    $(msgmodal).modal()
+                })
+            }
+        })
+    })
+</script>

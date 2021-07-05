@@ -1,0 +1,127 @@
+﻿
+@{
+    ViewData["Title"] = $"پست ها - {Model.firstName} {Model.lastName} - پروفایل";
+}
+
+
+@model ApplicationUser
+
+<section class="author-area pb-40">
+    <div class="container">
+        <div class="author-box">
+            @if (Model.bigAvatar != null)
+            {
+                <img src="@($"data:image/jpeg;base64,{Convert.ToBase64String(Model.bigAvatar)}")" alt="image">
+            }
+            else
+            {
+                <img src="~/assets/img/user.png" alt="image" />
+            }
+
+        <div class="author-info">
+            <div class="author-title">
+                <h3>@($"{Model.firstName} {Model.lastName}")</h3>
+
+                @if (Model.bio != null)
+                {
+                    if (Model.bio.Length > 350)
+                    {
+                        <p>@Model.bio.Substring(0, 350)</p>
+                    }
+                    else
+                    {
+                        <p>@Model.bio</p>
+                    }
+                }
+            </div>
+
+            @{PersianCalendar persian = new();}
+            <div>
+                <lable>تاریخ عضویت: @($"{persian.GetYear(Model.accountCrationTime)}/{persian.GetMonth(Model.accountCrationTime)}/{persian.GetDayOfMonth(Model.accountCrationTime)}")</lable>
+            </div>
+
+            <br />
+
+            <ul class="post-meta-info">
+                <li><a asp-action="ShowProfilePosts" asp-controller="account" asp-route-id="@Model.Id"><i class="icofont-blogger"></i> پست ها: @ViewBag.posts</a></li>
+                <li><a asp-action="ShowProfile" asp-controller="account" asp-route-id="@Model.Id"><i class="icofont-comment"></i> نظر: @ViewBag.mainCommentsCount</a></li>
+                <li><a asp-action="ShowProfileQuotation" asp-controller="account" asp-route-id="@Model.Id"><i class="icofont-quote-right"></i> نقل قول ها: @ViewBag.subCommentsCount</a></li>
+            </ul>
+        </div>
+        </div>
+    </div>
+</section>
+<section class="all-category-news ptb-40 pt-0">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-md-12">
+                <div class="comments-area">
+                    <ol class="comment-list">
+                        @foreach (var item in ViewData["mPosts"] as List<Post>)
+                        {
+                            <li class="comment">
+                                <article class="comment-body">
+                                    <footer class="comment-meta">
+                                        <div class="comment-metadata">
+                                            <i class="icofont-calendar"></i>@item.pPostCreation
+                                            <i class="icofont-comment"></i> @(item.mainComments.Where(x => x.IsConfirm == true).Count() + item.mainComments.Sum(x => x.subComments.Where(x => x.IsConfirm == true).Count()))
+                                        </div>
+                                    </footer>
+
+                                    <div class="comment-content">
+                                        <p class="comment-metadata"><a asp-action="PostShowBridge" asp-controller="post" asp-route-id="@item.id">@item.topic</a></p>
+                                    </div>
+                                </article>
+                            </li>
+                        }
+                    </ol>
+                </div>
+                <cs-pager asp-action="ShowProfilePosts" asp-controller="account" asp-route-id="@Model.Id"
+                          cs-pager-li-current-class="page-item active"
+                          cs-pager-li-other-class="page-item"
+                          cs-pager-li-non-active-class="page-item disabled"
+                          cs-pager-link-current-class="page-link"
+                          cs-pager-link-other-class="page-link"
+                          cs-paging-pagenumber="@ViewBag.PageNumber"
+                          cs-paging-totalitems="@ViewBag.TotalItems"
+                          cs-paging-pagesize="@ViewBag.PageSize"
+                          asp-route-listId=""
+                          asp-route-sortmode="">
+                </cs-pager>
+            </div>
+
+            <div class="col-lg-4 col-md-12">
+                <div class="featured-news">
+                    <div class="section-title">
+                        <h2>جدیدترین اخبار</h2>
+                    </div>
+
+                    @foreach (var item in ViewData["newNews"] as List<Post>)
+                    {
+                        <div class="single-featured-news">
+                            <a asp-action="postshowbridge" asp-controller="post" asp-route-id="@item.id"><img src="@($"data:image/jpeg;base64,{Convert.ToBase64String(item.mainImg)}")" alt="image"></a>
+
+                            <div class="news-content">
+                                <ul>
+                                    <li>
+                                        <i class="icofont-user-suited"></i>
+                                        توسط
+                                        <a asp-action="showprofile" asp-controller="account" asp-route-id="@Model.Id" target="_blank">
+                                            @($"{Model.firstName} {Model.lastName}")
+                                        </a>
+                                    </li>
+                                    <li><i class="icofont-calendar"></i> @item.pPostCreation</li>
+                                </ul>
+                                <h3><a asp-action="postshowbridge" asp-controller="post" asp-route-id="@item.id">@item.topic</a></h3>
+                            </div>
+
+                            <div class="tags">
+                                <a asp-action="showcategorybridge" asp-controller="home" asp-route-id="@item.category.id">@item.category.Pname</a>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

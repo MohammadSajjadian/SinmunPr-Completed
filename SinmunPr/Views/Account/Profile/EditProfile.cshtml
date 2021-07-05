@@ -1,0 +1,83 @@
+﻿@{
+    ViewData["Title"] = "ویرایش مشخصات";
+}
+
+
+@model EditProfileViewModel
+<section class="signup-area">
+    <div class="d-table">
+        <div class="d-table-cell">
+            <div class="signup-form">
+                <h3>ویرایش مشخصات</h3>
+                @if (TempData["avatarlengh"] != null)
+                {
+                    <div class="alert alert-danger" role="alert" id="loginfail">@TempData["avatarlengh"]</div>
+                }
+                @if (TempData["usernotvalid"] != null)
+                {
+                    <div class="alert alert-danger" role="alert" id="loginfail">@TempData["usernotvalid"]</div>
+                }
+                @if (TempData["useralreadyexist"] != null)
+                {
+                    <div class="alert alert-danger" role="alert" id="loginfail">@TempData["useralreadyexist"]</div>
+                }
+                @if (TempData["phonenumber"] != null)
+                {
+                    <div class="alert alert-danger" role="alert" id="loginfail">@TempData["phonenumber"]</div>
+                }
+
+                <form asp-action="editprofileconfirm" asp-controller="account" method="post" enctype="multipart/form-data">
+                    <div class="form-group">
+                        <label><i class="icofont-ui-user"></i></label>
+                        <input asp-for="username" type="text" class="form-control" placeholder="نام کاربری">
+                        <span asp-validation-for="username"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label><i class="icofont-info-circle"></i></label>
+                        <input asp-for="firstname" type="text" class="form-control" placeholder="نام">
+                        <span asp-validation-for="firstname"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label><i class="icofont-info-circle"></i></label>
+                        <input asp-for="lastname" type="text" class="form-control" placeholder="نام خانوادگی">
+                        <span asp-validation-for="lastname"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label><i class="icofont-mobile-phone"></i></label>
+                        <input asp-for="phonenumber" class="form-control" placeholder="شماره موبایل">
+                        <span asp-validation-for="phonenumber"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label><i class="icofont-papers"></i></label>
+                        <textarea asp-for="bio" type="text" class="form-control" placeholder="درباره من"></textarea>
+                    </div>
+
+                    <div class="custom-file">
+                        <input id="avatar" asp-for="avatar" type="file" class="custom-file-input">
+                        <label class="custom-file-label">آواتار</label>
+                    </div>
+
+                    <img id="avatarimg" width="300" style="margin-top:20px; border-radius:10px" />
+
+                    <button id="submit" type="submit" class="btn btn-primary col-12">ثبت</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+<script>
+    $(function () {
+        $(avatar).change(function () {
+            var reader = new FileReader()
+            reader.readAsDataURL(avatar.files[0])
+
+            reader.onloadend = (x) => {
+                avatarimg.src = x.target.result
+            }
+        })
+    })
+</script>

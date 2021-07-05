@@ -1,0 +1,389 @@
+﻿<!doctype html>
+<html lang="fa">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="keywords" content="@ViewData["Keywords"]">
+    <meta name="description" content="@Html.Raw(ViewData["Description"])">
+
+    <!-- Bootstrap Min CSS -->
+    <link rel="stylesheet" href="~/assets/css/bootstrap.min.css">
+    <!-- Animate Min CSS -->
+    <link rel="stylesheet" href="~/assets/css/animate.min.css">
+    <!-- IcoFont Min CSS -->
+    <link rel="stylesheet" href="~/assets/css/icofont.min.css">
+    <!-- MeanMenu CSS -->
+    <link rel="stylesheet" href="~/assets/css/meanmenu.css">
+    <!-- Owl Carousel Min CSS -->
+    <link rel="stylesheet" href="~/assets/css/owl.carousel.min.css">
+    <!-- Magnific Popup Min CSS -->
+    <link rel="stylesheet" href="~/assets/css/magnific-popup.min.css">
+    <!-- Style CSS -->
+    <link rel="stylesheet" href="~/assets/css/style.css">
+    <!-- RTL CSS -->
+    <link rel="stylesheet" href="~/assets/css/rtl.css">
+    <!-- Responsive CSS -->
+    <link rel="stylesheet" href="~/assets/css/responsive.css">
+
+    <title>@ViewData["Title"] | مجله خبری Sinmun</title>
+
+    <link rel="icon" type="image/png" href="~/assets/img/favicon.png">
+
+    <script src="~/lib/jquery/dist/jquery.js"></script>
+    <script src="~/lib/jquery-validation/dist/jquery.validate.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.js"></script>
+    <script src="https://cdn.tiny.cloud/1/rs07w6qzz1wifjj4zi1uc53vuau00y218wdrtoethnvf1alj/tinymce/5/tinymce.min.js" referrerpolicy="origin"></script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-R166GFWRNB"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+
+        gtag('config', 'G-R166GFWRNB');
+    </script>
+
+    <style>
+        .field-validation-error {
+            color: red
+        }
+    </style>
+</head>
+
+@inject UserManager<ApplicationUser> userManager
+<body>
+    <!-- Start Header Area -->
+    <header class="header-area">
+        <!-- Start Top Header -->
+        <div class="top-header">
+            <div class="container">
+                <div class="row align-items-center">
+                    <div class="col-lg-6 col-md-8">
+                        <ul class="top-nav">
+                            <li><a asp-action="aboutus" asp-controller="home">درباره ما</a></li>
+                            <li><a asp-action="contactus" asp-controller="home">تماس با ما</a></li>
+                        </ul>
+                    </div>
+
+                    <div class="col-lg-6 col-md-4 text-right">
+                        <ul class="top-social">
+                            <li><a href="https://www.instagram.com/codemaster_ir/" target="_blank"><i class="icofont-instagram"></i></a></li>
+                            <li><a href="https://www.linkedin.com/in/mohammad-sajjadian-b15556203" target="_blank"><i class="icofont-linkedin"></i></a></li>
+                            <li><a href="https://github.com/MohammadSajjadian" target="_blank"><i class="icofont-github"></i></a></li>
+                        </ul>
+
+                        <div class="header-date">
+                            <i class="icofont-clock-time"></i>
+                            @{
+                                PersianCalendar persian = new PersianCalendar();
+
+                                string Pday = persian.GetDayOfWeek(DateTime.Now).ToString();
+                                string PDres = "";
+
+                                int Pmonth = persian.GetMonth(DateTime.Now);
+                                string PMres = "";
+
+                                switch (Pday)
+                                {
+                                    case "Saturday":
+                                        PDres = "شنبه";
+                                        break;
+
+                                    case "Sunday":
+                                        PDres = "یک شنبه";
+                                        break;
+
+                                    case "Monday":
+                                        PDres = "دوشنبه";
+                                        break;
+
+                                    case "Tuesday":
+                                        PDres = "سه شنبه";
+                                        break;
+
+                                    case "Wednessday":
+                                        PDres = "چهارشنبه";
+                                        break;
+
+                                    case "Thursday":
+                                        PDres = "پنج شنبه";
+                                        break;
+
+                                    case "Friday":
+                                        PDres = "جمعه";
+                                        break;
+                                }
+
+                                switch (Pmonth)
+                                {
+                                    case 1:
+                                        PMres = "فروردین";
+                                        break;
+
+                                    case 2:
+                                        PMres = "اردیبهشت";
+                                        break;
+
+                                    case 3:
+                                        PMres = "خرداد";
+                                        break;
+
+                                    case 4:
+                                        PMres = "تیر";
+                                        break;
+
+                                    case 5:
+                                        PMres = "مرداد";
+                                        break;
+
+                                    case 6:
+                                        PMres = "شهریور";
+                                        break;
+
+                                    case 7:
+                                        PMres = "مهر";
+                                        break;
+
+                                    case 8:
+                                        PMres = "آبان";
+                                        break;
+
+                                    case 9:
+                                        PMres = "آذر";
+                                        break;
+
+                                    case 10:
+                                        PMres = "دی";
+                                        break;
+
+                                    case 11:
+                                        PMres = "بهمن";
+                                        break;
+
+                                    case 12:
+                                        PMres = "اسفند";
+                                        break;
+                                }
+
+                                <span>@($"{PDres} {persian.GetDayOfMonth(DateTime.Now)} {PMres}")</span>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- End Top Header -->
+        <!-- Start Navbar Area -->
+        <div class="navbar-area">
+            <div class="sinmun-mobile-nav">
+                <div class="logo">
+                    <a asp-action="index" asp-controller="home"><img src="~/assets/img/logo.png" alt="logo"></a>
+                </div>
+            </div>
+
+            <div class="sinmun-nav">
+                <div class="container">
+                    <nav class="navbar navbar-expand-md navbar-light">
+                        <a class="navbar-brand" asp-action="index" asp-controller="home"><img src="~/assets/img/logo.png" alt="logo"></a>
+
+                        <div class="collapse navbar-collapse mean-menu" id="navbarSupportedContent">
+                            <ul class="navbar-nav">
+                                @if (User.Identity.IsAuthenticated)
+                                {
+                                    var user = await userManager.FindByNameAsync(User.Identity.Name);
+                                    <li class="nav-item">
+                                        <a><i class="icofont-user-alt-5 nav-link"></i></a>
+                                        <ul class="dropdown-menu">
+                                            <li class="nav-item"><a asp-action="showprofile" asp-controller="account" asp-route-id="@user.Id " class="nav-link">مشاهده پروفایل</a></li>
+
+                                            <li class="nav-item"><a asp-action="editprofile" asp-controller="account" class="nav-link">ویرایش مشخصات</a></li>
+
+                                            <li class="nav-item"><a asp-action="changepassword" asp-controller="account" class="nav-link">تغییر رمز عبور</a></li>
+
+                                            <li class="nav-item"><a asp-action="logout" asp-controller="account" class="nav-link">خروج</a></li>
+                                        </ul>
+                                    </li>
+                                }
+                                else
+                                {
+                                    <li class="nav-item">
+                                        <a asp-action="register" asp-controller="account" class="nav-link">ثبت نام</a>
+                                        <a asp-action="login" asp-controller="account" class="nav-link">ورود</a>
+                                    </li>
+                                }
+
+                                @if (User.IsInRole("admin"))
+                                {
+                                    <li class="nav-item">
+                                        <a href="#" class="nav-link active">ادمین</a>
+                                        <ul class="dropdown-menu">
+                                            <li class="nav-item"><a asp-action="postinsert" asp-controller="admin" class="nav-link">ثبت پست</a></li>
+
+                                            <li class="nav-item"><a asp-action="categoryoptions" asp-controller="admin" class="nav-link">حذف و ویرایش دسته بندی ها</a></li>
+
+                                            <li class="nav-item"><a asp-action="postoptions" asp-controller="admin" asp-route-pagenumber="1" class="nav-link">حذف و ویرایش پست ها</a></li>
+
+                                            <li class="nav-item"><a asp-action="tagoptions" asp-controller="admin" asp-route-pagenumber="1" class="nav-link">حذف و ویرایش برچسب ها</a></li>
+
+                                            <li class="nav-item"><a asp-action="sensitivewordsoption" asp-controller="admin" asp-route-pagenumber="1" class="nav-link">حذف و ثبت کلمات حساس</a></li>
+
+                                            <li class="nav-item"><a asp-action="aboutuschange" asp-controller="admin" class="nav-link">ویرایش درباره ما</a></li>
+
+                                            @await Component.InvokeAsync("Inbox")
+
+                                            @(await Component.InvokeAsync("CommentsCount"))
+
+                                            <li class="nav-item"><a asp-action="manageusers" asp-controller="admin" asp-route-pagenumber="1" class="nav-link">مدیریت کاربران</a></li>
+                                        </ul>
+                                    </li>
+                                }
+
+                                @await Component.InvokeAsync("Category")
+                            </ul>
+
+                            <div class="others-options">
+                                <ul class="navbar-nav">
+                                    <li class="header-search">
+                                        <div class="nav-search">
+                                            <div class="nav-search-button">
+                                                <i class="icofont-ui-search"></i>
+                                            </div>
+
+                                            <form asp-action="searchbridge" asp-controller="post">
+                                                <span class="nav-search-close-button" tabindex="0">✕</span>
+                                                <div class="nav-search-inner">
+                                                    <input data-role="tagsinput" type="text" name="search" placeholder="جستجو کنید ....">
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </nav>
+                </div>
+            </div>
+        </div>
+        <!-- End Navbar Area -->
+        @await Component.InvokeAsync("ImmediateNews")
+    </header>
+    <!-- End Header Area -->
+    @RenderBody()
+    <!-- Start Footer Area -->
+    <footer class="footer-area">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-4 col-md-6">
+                    <div class="single-footer-widget">
+                        <h3>درباره مجله خبری</h3>
+
+                        @await Component.InvokeAsync("FooterAboutUs") 
+
+                        <div class="connect-social">
+                            <p>ما را دنبال کنید ، با ما در ارتباط باشید:</p>
+
+                            <ul>
+                                <li><a href="https://www.instagram.com/codemaster_ir/" target="_blank"><i class="icofont-instagram"></i></a></li>
+                                <li><a href="https://www.linkedin.com/in/mohammad-sajjadian-b15556203" target="_blank"><i class="icofont-linkedin"></i></a></li>
+                                <li><a href="https://github.com/MohammadSajjadian" target="_blank"><i class="icofont-github"></i></a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                @await Component.InvokeAsync("LastNews")
+
+                <div class="col-lg-4 col-md-6 offset-lg-0 offset-md-3">
+                    <div class="single-footer-widget">
+                        <h3>خوراک توئیتر</h3>
+
+                        <div class="twitter-tweet-list">
+                            <div class="single-tweet">
+                                <i class="icofont-twitter"></i>
+                                <span>2 روز پیش</span>
+                                <p>کنفرانس رویداد تم وردپرس -> 2 خانه جدید اضافه شده # سخنرانی # کلمه # هدف # فدراسیون کلیساها # موضوع وردپرس <a href="#">#پوسته وردپرس https://tt.co/Rn00zM5q7gY70</a></p>
+                            </div>
+
+                            <div class="single-tweet">
+                                <i class="icofont-twitter"></i>
+                                <span>2 روز پیش</span>
+                                <p>کنفرانس رویداد تم وردپرس -> 2 خانه جدید اضافه شده # سخنرانی # کلمه # هدف # فدراسیون کلیساها # موضوع وردپرس <a href="#">#پوسته وردپرس https://tt.co/Rn00zM5q7gY70</a></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="copyright-area">
+            <div class="container">
+                <div class="row align-items-center">
+                    <div class="col-lg-6 col-md-12">
+                        <p>طراحی و توسعه توسط Mohammad Sajjadian</p>
+                    </div>
+
+                    <div class="col-lg-6 col-md-12">
+                        <ul class="footer-nav">
+                            <li><a asp-action="aboutus" asp-controller="home">درباره ما</a></li>
+                            <li><a asp-action="contactus" asp-controller="home">تماس با ما</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+    <!-- End Footer Area -->
+
+    <div class="go-top"><i class="icofont-swoosh-up"></i></div>
+
+    <!-- Jquery Min JS -->
+    <script src="~/assets/js/jquery.min.js"></script>
+    <!-- Popper Min JS -->
+    <script src="~/assets/js/popper.min.js"></script>
+    <!-- Bootstrap Min JS -->
+    <script src="~/assets/js/bootstrap.min.js"></script>
+    <!-- MeanMenu JS -->
+    <script src="~/assets/js/jquery.meanmenu.js"></script>
+    <!-- MixItUp Min JS -->
+    <script src="~/assets/js/mixitup.min.js"></script>
+    <!-- Owl Carousel Min JS -->
+    <script src="~/assets/js/owl.carousel.min.js"></script>
+    <!-- Magnific Popup Min JS -->
+    <script src="~/assets/js/jquery.magnific-popup.min.js"></script>
+    <!-- Form Validator Min JS -->
+    <script src="~/assets/js/form-validator.min.js"></script>
+    <!-- Contact Form Script JS -->
+    <script src="~/assets/js/contact-form-script.js"></script>
+    <!-- ajaxChimp Min JS -->
+    <script src="~/assets/js/jquery.ajaxchimp.min.js"></script>
+    <!-- Main JS -->
+    <script src="~/assets/js/main.js"></script>
+
+
+    <div class="modal fade" id="msgmodal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header" style="background-color:red">
+                    <h3>پیغام</h3>
+                </div>
+                <div class="modal-body">
+                    <p id="msg">@TempData["msg"]</p>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-danger" data-dismiss="modal">بستن</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @if (TempData["msg"] != null)
+    {
+        <script>
+            $(function () {
+                $(msgmodal).modal()
+            })
+        </script>
+    }
+</body>
+</html>

@@ -1,0 +1,85 @@
+﻿
+@{
+    ViewData["Title"] = "ورود";
+}
+
+@model LoginViewModel
+@inject IOptions<SinmunPr.Models.RecaptchaSetting> GoogleRecaptcha
+    <!-- Start Login Area -->
+<section class="login-area">
+    <div class="d-table">
+        <div class="d-table-cell">
+            <div class="login-form">
+                <h3>وارد شوید ، یا <a style="color:cornflowerblue" asp-action="register" asp-controller="account">اکنون ثبت نام کنید</a></h3>
+
+                @if (TempData["loginfail"] != null)
+                {
+                    <div class="alert alert-danger" role="alert" id="loginfail">@TempData["loginfail"]</div>
+                }
+                @if (TempData["usernotfound"] != null)
+                {
+                    <div class="alert alert-danger" role="alert" id="loginfail">@(TempData["usernotfound"]) <a asp-action="register" asp-controller="account">ثبت نام کنید.</a></div>
+                }
+
+                <form asp-action="loginconfirm" asp-controller="account">
+                    <div class="form-group">
+                        <label for="username"><i class="icofont-ui-user"></i></label>
+                        <input asp-for="username" type="text" class="form-control" placeholder="نام کاربری">
+                        <span asp-validation-for="username"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="password"><i class="icofont-lock"></i></label>
+                        <input asp-for="password" type="password" class="form-control" placeholder="رمز عبور">
+                        <span asp-validation-for="password"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="remember-me">
+                            <input asp-for="rememmberme" type="checkbox">
+                            مرا به خاطر بسپار
+                        </label>
+
+                        <a id="forgot" href="#" class="forgot-password">
+                            رمز ورود خود را فراموش کرده اید؟
+                        </a>
+                    </div>
+
+                    <div class="g-recaptcha" data-sitekey="6LeSO_UaAAAAAH-vUH8OyIwFwlwmURNCFORkoQMS"></div>
+                    <div id="ReCaptchContainer"></div>
+                    <label id="lblMessage" runat="server" clientidmode="static"></label>
+
+                    <button type="submit" class="btn btn-primary">ورود</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+<form asp-action="resspasslvlone" asp-controller="account">
+    <div class="modal fade" id="forgotmodal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header" style="background-color:red">
+                    <h3>فراموشی رمزعبور</h3>
+                </div>
+                <div class="modal-body">
+                    <input class="form-control" name="email" required
+                           placeholder="ایمیل خود را وارد کنید..." />
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-danger" data-dismiss="modal">بستن</button>
+                    <button class="btn btn-success" style="margin-right:10px">ارسال</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+<script>
+    $(function () {
+        $(forgot).click(function (event) {
+            event.preventDefault()
+            $(forgotmodal).modal()
+        })
+    })
+</script>

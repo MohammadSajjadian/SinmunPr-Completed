@@ -1,0 +1,54 @@
+﻿
+@{
+    ViewData["Title"] = "ثبت نام";
+}
+
+@model RegisterViewModel
+<!-- Start Signup Area -->
+<section class="signup-area">
+    <div class="d-table">
+        <div class="d-table-cell">
+            <div class="signup-form">
+                <h3>لطفا ثبت نام کنید ، یا <a style="color:cornflowerblue" asp-action="login" asp-controller="account">وارد شوید</a></h3>
+
+                @if (TempData["registerfail"] != null)
+                {
+                    <div class="alert alert-danger" role="alert" id="loginfail">@TempData["registerfail"]</div>
+                }
+                @if (TempData["userexist"] != null)
+                {
+                    <div class="alert alert-danger" role="alert" id="loginfail">@(TempData["userexist"]) <a asp-action="login" asp-controller="account">وارد شوید</a></div>
+                }
+
+                <form asp-action="registerconfirmlvlone" asp-controller="account">
+                    <div class="form-group">
+                        <label for="username"><i class="icofont-ui-user"></i></label>
+                        <input asp-for="username" type="text" class="form-control" placeholder="نام کاربری">
+                        <span asp-validation-for="username"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="username"><i class="icofont-envelope"></i></label>
+                        <input asp-for="email" type="text" class="form-control" placeholder="ایمیل شما">
+                        <span asp-validation-for="email"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="password"><i class="icofont-lock"></i></label>
+                        <input asp-for="password" type="password" class="form-control" placeholder="رمز عبور">
+                        <span asp-validation-for="password"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="password"><i class="icofont-lock"></i></label>
+                        <input asp-for="repassword" type="password" class="form-control" placeholder="تکرار رمز عبور">
+                        <span asp-validation-for="repassword"></span>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">ثبت نام</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- End Signup Area -->

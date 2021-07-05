@@ -1,0 +1,140 @@
+﻿
+@{
+    ViewData["Title"] = $"{ViewBag.Pname}";
+}
+
+@model PagedResult<PostTagId>
+
+<section class="all-category-news ptb-40">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-md-12">
+                <div class="section-title">
+                    <h2>@ViewBag.Pname</h2>
+                </div>
+
+                @foreach (var item in Model.Data)
+                {
+                    <div class="single-category-news">
+                        <div class="row m-0 align-items-center">
+                            <div class="col-lg-5 col-md-6 p-0">
+                                <div class="category-news-image">
+                                    <a asp-action="PostShowBridge" asp-controller="post" asp-route-id="@item.id"><img src="@($"data:image/jpeg;base64,{Convert.ToBase64String(item.Post.mainImg)}")" alt="image"></a>
+                                    <div class="tags">
+                                        <a asp-action="showcategorybridge" asp-controller="home" asp-route-id="@item.Post.category.id">@item.Post.category.Pname</a>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-lg-7 col-md-6">
+                                <div class="category-news-content">
+                                    <h3><a asp-action="PostShowBridge" asp-controller="post" asp-route-id="@item.Post.id">@item.Post.topic</a></h3>
+                                    <span>
+                                        <i class="icofont-user-alt-2"></i>
+                                        <a style="display: inline;color: inherit" asp-action="showprofile" asp-controller="account" asp-route-id="@item.Post.applicationUser.Id" target="_blank">
+                                            @($"{item.Post.applicationUser.firstName} {item.Post.applicationUser.lastName}")
+                                        </a> |
+                                        <i class="icofont-comment"></i>
+                                        @(item.Post.mainComments.Where(x => x.IsConfirm == true).Count() + item.Post.mainComments.Sum(x => x.subComments.Where(x => x.IsConfirm == true).Count())) |
+                                        @item.Post.pPostCreation
+                                        <i class="icofont-clock-time"></i>
+                                    </span>
+                                    <p>@Html.Raw(item.Post.shortDes)</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+
+                <cs-pager asp-action="ShowCategory" asp-controller="home"
+                          cs-pager-li-current-class="page-item active"
+                          cs-pager-li-other-class="page-item"
+                          cs-pager-li-non-active-class="page-item disabled"
+                          cs-pager-link-current-class="page-link"
+                          cs-pager-link-other-class="page-link"
+                          cs-paging-pagenumber="@Model.PageNumber"
+                          cs-paging-totalitems="@Model.TotalItems"
+                          cs-paging-pagesize="@Model.PageSize"
+                          asp-route-listId=""
+                          asp-route-sortmode="">
+                </cs-pager>
+            </div>
+
+            <div class="col-lg-4 col-md-12">
+                <div class="stay-connected-ads">
+                    <a href="#"><img src="~/assets/img/3-ads.png" alt="image"></a>
+                </div>
+
+                <div class="featured-news">
+                    <div class="section-title">
+                        <h2>اخبار مهم</h2>
+                    </div>
+
+                    @foreach (var item in ViewData["important"] as List<Post>)
+                    {
+                        <div class="single-featured-news">
+                            <a asp-action="PostShowBridge" asp-controller="post" asp-route-id="@item.id"><img src="@($"data:image/jpeg;base64,{Convert.ToBase64String(item.mainImg)}")" alt="image"></a>
+
+                            <div class="news-content">
+                                <ul>
+                                    <li><i class="icofont-user-suited"></i> توسط <a asp-action="showprofile" asp-controller="account" asp-route-id="@item.applicationUser.Id" target="_blank">@($"{item.applicationUser.firstName} {item.applicationUser.lastName}")</a></li>
+                                    <li><i class="icofont-calendar"></i> @item.pPostCreation</li>
+                                    <li><i class="icofont-comment"></i> @(item.mainComments.Where(x => x.IsConfirm == true).Count() + item.mainComments.Sum(x => x.subComments.Where(x => x.IsConfirm == true).Count()))</li>
+                                </ul>
+                                <h3><a asp-action="PostShowBridge" asp-controller="post" asp-route-id="@item.id">@item.topic</a></h3>
+                            </div>
+
+                            <div class="tags bg-5">
+                                <a asp-action="showcategorybridge" asp-controller="home" asp-route-id="@item.category.id">@item.category.Pname</a>
+                            </div>
+                        </div>
+                    }
+
+                    <div style="margin-top:30px" class="stay-connected-ads">
+                        <a href="#"><img src="~/assets/img/3-ads.png" alt="image"></a>
+                    </div>
+
+                    <div class="featured-news">
+                        <div class="section-title">
+                            <h2>داغ ترین بحث ها</h2>
+                        </div>
+
+                        @foreach (var item in ViewData["mostview"] as List<Post>)
+                        {
+                            <div class="single-featured-news">
+                                <a asp-action="PostShowBridge" asp-controller="post" asp-route-id="@item.id"><img src="@($"data:image/jpeg;base64,{Convert.ToBase64String(item.mainImg)}")" alt="image"></a>
+
+                                <div class="news-content">
+                                    <ul>
+                                        <li>
+                                            <i class="icofont-user-suited"></i> توسط
+                                            <a asp-action="showprofile" asp-controller="account" asp-route-id="@item.applicationUser.Id" target="_blank">
+                                                @($"{item.applicationUser.firstName} {item.applicationUser.lastName}")
+                                            </a>
+                                        </li>
+                                        <li><i class="icofont-calendar"></i> @item.pPostCreation</li>
+                                        <li><i class="icofont-comment"></i> @(item.mainComments.Where(x => x.IsConfirm == true).Count() + item.mainComments.Sum(x => x.subComments.Where(x => x.IsConfirm == true).Count()))</li>
+                                    </ul>
+                                    <h3><a asp-action="PostShowBridge" asp-controller="post" asp-route-id="@item.id">@item.topic</a></h3>
+                                </div>
+
+                                <div class="tags bg-5">
+                                    <a href="#">@item.category.Pname</a>
+                                </div>
+                            </div>
+                        }
+
+                        <div class="hot-news-ads">
+                            <a href="#"><img src="~/assets/img/4-ads.png" alt="image"></a>
+                        </div>
+                    </div>
+
+                    <div class="hot-news-ads">
+                        <a href="#"><img src="~/assets/img/4-ads.png" alt="image"></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- End All Category News Area -->

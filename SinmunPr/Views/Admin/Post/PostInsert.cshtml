@@ -1,0 +1,183 @@
+﻿
+@{
+    ViewData["Title"] = "ثبت مقاله";
+}
+
+@model PostViewModel
+<section class="news-details-area pb-40">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12 col-md-12">
+                <div class="news-details">
+                    <div class="comments-area">
+                        <div class="comment-respond">
+                            <h3 style="margin-bottom:25px" class="comment-reply-title">ثبت خبر جدید</h3>
+                            <form class="comment-form" asp-action="postinsertconfirm" asp-controller="post" method="post" enctype="multipart/form-data">
+                                <label>دسته بندی*</label>
+                                <select asp-for="categoryId" style="margin-bottom:15px" class="form-control" id="url">
+                                    <option value="-1">-- انتخاب دسته بندی --</option>
+                                    @foreach (var item in ViewData["categories"] as List<Category>)
+                                    {
+                                        <option value="@item.id">@item.Pname</option>
+                                    }
+                                </select>
+                                <span asp-validation-for="categoryId"></span>
+                                <label>عکس خبر*</label>
+                                <p class="comment-form-url custom-file">
+                                    <input asp-for="mainImg" class="custom-file-input" type="file" id="topicimginput">
+                                    <label id="imglabel" class="custom-file-label"></label>
+                                    <span asp-validation-for="mainImg"></span>
+                                </p>
+                                <p class="container">
+                                    <img id="topicimg" width="400" />
+                                </p>
+                                <p class="comment-form-url">
+                                    <label for="url">عنوان خبر*</label>
+                                    <input asp-for="topic" id="url">
+                                    <span asp-validation-for="topic"></span>
+                                </p>
+                                <p class="comment-form-comment">
+                                    <label for="comment">توضیح کوتاه خبر*</label>
+                                    <textarea asp-for="shortDes" cols="45" rows="5"></textarea>
+                                    <span asp-validation-for="shortDes"></span>
+                                </p>
+                                <p class="comment-form-comment">
+                                    <label for="comment">محتوای خبر*</label>
+                                    <textarea asp-for="content" cols="45" rows="5"></textarea>
+                                    <span asp-validation-for="content"></span>
+                                </p>
+                                @for (int i = 1; i <= 4; i++)
+                                {
+                                    <p style="margin-bottom:50px" class="comment-form-email">
+                                        <label for="email">نام منبع(@(i))</label>
+                                        <input asp-for="sourceName" id="email">
+                                    </p>
+                                    <p style="margin-bottom:50px" class="comment-form-email">
+                                        <label for="email">لینک منبع(@(i))</label>
+                                        <input asp-for="sourceLink" id="email">
+                                    </p>
+                                }
+
+                                <p class="comment-form-url">
+                                    <label>تگ ها</label>
+                                    <select asp-for="tags" name="tags" class="form-control" multiple>
+                                        <option value="-1">-- تگ های مورد نظر را انتخاب کنید --</option>
+                                        @foreach (var item in ViewData["tags"] as List<Tag>)
+                                        {
+                                            <option value="@item.id">@item.Pname</option>
+                                        }
+                                    </select>
+                                </p>
+                                <p class="form-group">
+                                    <label class="remember-me">
+                                        <input asp-for="IsInImmediate" type="checkbox">
+                                        قرار گیری خبر در لیست خبر های فوری(بالای سایت)
+                                    </label>
+                                </p>
+                                <p class="form-group">
+                                    <label class="remember-me">
+                                        <input asp-for="IsInEditorsChoice" type="checkbox">
+                                        قرار گیری خبر در قسمت انتخاب سردبیر
+                                    </label>
+                                </p>
+                                <p class="form-group">
+                                    <label class="remember-me">
+                                        <input asp-for="IsInImportant" type="checkbox">
+                                        قرار گیری به عنوان خبر مهم
+                                    </label>
+                                </p>
+                                <p class="form-group">
+                                    <label class="remember-me">
+                                        <input asp-for="IsInTopSlideBar" type="checkbox">
+                                        قرار گیری خبر در اسلاید بار بزرگ اول سایت
+                                    </label>
+                                </p>
+                                <p class="form-group">
+                                    <label class="remember-me">
+                                        <input asp-for="IsInDedicated" type="checkbox">
+                                        قرار گیری در قسمت خبر های اختصاصی
+                                    </label>
+                                </p>
+                                <div class="modal fade" id="articlemodal">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header" style="background-color:red">
+                                                <h3>ثبت خبر</h3>
+                                            </div>
+                                            <div class="modal-body">
+                                                <p>آیا مایل به ثبت خبر هستید؟</p>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button class="btn btn-danger" data-dismiss="modal">خیر</button>
+                                                <button class="btn btn-success" style="margin-right:10px">بله</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                            <p class="form-submit">
+                                <input type="submit" name="submit" id="articlebutton" class="submit" value="ثبت مقاله">
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<script>
+    tinymce.init({
+        selector: 'textarea',
+        plugins: 'advlist autolink autosave link image lists charmap print preview hr anchor pagebreak spellchecker searchreplace wordcount visualblocks visualchars code fullscreen insertdatetime media nonbreaking save table contextmenu directionality emoticons template textcolor paste textcolor colorpicker',
+        toolbar: 'a11ycheck numlist bullist tabfocus addcomment showcomments casechange checklist code formatpainter pageembed permanentpen table',
+        toolbar_mode: 'floating',
+        tinycomments_mode: 'embedded',
+        tinycomments_author: 'Author name',
+        forced_root_block: "",
+        force_br_newlines: true,
+        force_p_newlines: false,
+        image_title: true,
+        automatic_uploads: true,
+        file_picker_types: 'image',
+        file_picker_callback: function (cb, value, meta) {
+            var input = document.createElement('input');
+            input.setAttribute('type', 'file');
+            input.setAttribute('accept', 'image/*');
+
+            input.onchange = function () {
+                var file = this.files[0];
+
+                var reader = new FileReader();
+                reader.onload = function () {
+                    var id = 'blobid' + (new Date()).getTime();
+                    var blobCache = tinymce.activeEditor.editorUpload.blobCache;
+                    var base64 = reader.result.split(',')[1];
+                    var blobInfo = blobCache.create(id, file, base64);
+                    blobCache.add(blobInfo);
+
+                    cb(blobInfo.blobUri(), { title: file.name });
+                };
+                reader.readAsDataURL(file);
+            };
+
+            input.click();
+        },
+    });
+
+    $(function () {
+        $(articlebutton).click(function () {
+            $(articlemodal).modal()
+        })
+
+        $(topicimginput).change(function () {
+            var reader = new FileReader
+
+            reader.readAsDataURL(topicimginput.files[0])
+            reader.onloadend = (x) => {
+                topicimg.src = x.target.result
+            }
+        })
+
+        $(selectbox).select2()
+    })
+</script>

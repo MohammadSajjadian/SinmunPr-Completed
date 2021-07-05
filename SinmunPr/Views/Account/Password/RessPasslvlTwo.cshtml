@@ -1,0 +1,27 @@
+﻿
+@{
+    ViewData["Title"] = "تغییر رمز عبور";
+}
+
+@model RegisterViewModel
+<section class="signup-area">
+    <div class="d-table">
+        <div class="d-table-cell">
+            <div class="signup-form">
+                <h3>تغییر رمزعبور</h3>
+
+                <div class="alert alert-warning" role="alert" id="loginfail">رمز عبور باید شامل حروف بزرگ، حروف کوچک، اعداد و نماد باشد.</div>
+
+                <form asp-action="resspasslvlthree" asp-controller="account" novalidate="novalidate">
+                    <div class="form-group">
+                        <label for="password"><i class="icofont-lock"></i></label>
+                        <input asp-for="password" type="password" class="form-control" placeholder="رمز عبور جدید" data-val="true">
+                        <span asp-validation-for="password"></span>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">ثبت</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>

@@ -1,0 +1,546 @@
+﻿
+@{
+    ViewData["Title"] = $"{Model.topic}";
+    ViewData["Description"] = $"{Model.shortDes}";
+}
+
+@model Post
+
+@inject UserManager<ApplicationUser> userManager
+<section class="news-details-area pb-40">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-md-12">
+                <div class="news-details">
+                    <div class="article-img">
+                        <img width="650" src="@($"data:image/jpeg;base64,{Convert.ToBase64String(Model.mainImg)}")" alt="image">
+                    </div>
+
+                    <div class="article-content">
+                        <ul class="entry-meta">
+                            <li>
+                                <i class="icofont-user"></i>
+                                <a asp-action="showprofile" asp-controller="account" asp-route-id="@Model.applicationUser.Id" target="_blank">
+                                    @($"{Model.applicationUser.firstName} {Model.applicationUser.lastName}")
+                                </a>
+                            </li>
+                            <li><i class="icofont-eye-alt"></i> @Model.views</li>
+                            <li><i class="icofont-calendar"></i>@Model.pPostCreation</li>
+                        </ul>
+
+                        <h3>@Model.topic</h3>
+
+                        <p>@Html.Raw(Model.shortDes)</p>
+
+                        <p>@Html.Raw(Model.content)</p>
+
+                        @if (Model.sources.Count != 0)
+                        {
+                            <ul class="category">
+                                <li><span>منبع:</span></li>
+                                @foreach (var item in ViewData["sources"] as List<Source>)
+                                {
+                                    <li><a href="https://@item.link" target="_blank">@item.name</a></li>
+                                }
+                            </ul>
+                        }
+                    </div>
+                </div>
+
+                <div class="post-controls-buttons">
+                    @if (ViewBag.next != 0)
+                    {
+                        <div>
+                            <a asp-action="postshowbridge" asp-controller="post" asp-route-id="@ViewBag.next">پست بعدی</a>
+                        </div>
+                    }
+
+                    @if (ViewBag.previous != 0)
+                    {
+                        <div>
+                            <a asp-action="postshowbridge" asp-controller="post" asp-route-id="@ViewBag.previous">پست قبلی</a>
+                        </div>
+                    }
+                </div>
+
+                <div class="comments-area">
+                    <h3 class="comments-title">@(Model.mainComments.Where(x => x.IsConfirm == true).Count() + Model.mainComments.Sum(x => x.subComments.Where(y => y.IsConfirm == true).Count())) نظر:</h3>
+                    @if (User.IsInRole("user") || User.IsInRole("admin"))
+                    {
+                        <div class="comment-respond" style="margin-bottom:20px">
+                            <h3 class="comment-reply-title">متن دیدگاه</h3>
+
+                            <form asp-action="commentconfirm" asp-controller="post" asp-route-postId="@Model.id" class="comment-form">
+                                <p class="comment-form-comment">
+                                    <textarea name="content" id="comment" cols="45" rows="5" maxlength="1500" required="required" placeholder="دیدگاه خود را وارد کنید..."></textarea>
+                                </p>
+                                <p class="form-submit">
+                                    <input type="submit" name="submit" id="submit" class="submit" value="ارسال">
+                                </p>
+                            </form>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="comment-respond" style="margin-bottom:20px">
+                            <label class="comment-form-comment">برای ارسال دیدگاه <a style="display: inline" asp-action="login" asp-controller="account">وارد شوید</a> یا <a style="display: inline" asp-action="register" asp-controller="account">ثبت نام</a> کنید.</label>
+                        </div>
+                    }
+
+                    <ol class="comment-list">
+                        <li class="comment">
+                            @foreach (var item in ViewData["mainComments"] as List<MainComment>)
+                            {
+                                <article class="comment-body">
+                                    <footer class="comment-meta">
+                                        <div class="comment-author vcard">
+                                            <a asp-action="showprofile" asp-controller="account" asp-route-id="@item.applicationUser.Id" target="_blank">
+                                                @if (item.applicationUser.smallAvatar != null)
+                                                {
+                                                    <img src="@($"data:image/jpeg;base64,{Convert.ToBase64String(item.applicationUser.smallAvatar)}")" class="avatar" alt="image">
+                                                }
+                                                else
+                                                {
+                                                    <img src="~/assets/img/user.png" class="avatar" alt="image">
+                                                }
+                                            </a>
+
+
+                                            @if (item.applicationUser.firstName != null && item.applicationUser.lastName != null)
+                                            {
+                                                <a style="display: inline-flex" asp-action="showprofile" asp-controller="account" asp-route-id="@item.userId" target="_blank">
+                                                    <b class="fn">@($"{item.applicationUser.firstName} {item.applicationUser.lastName}")</b>
+                                                </a>
+                                            }
+                                            else
+                                            {
+                                                <a style="display: inline-flex" asp-action="showprofile" asp-controller="account" asp-route-id="@item.userId" target="_blank">
+                                                    <b class="fn">@item.applicationUser.UserName</b>
+                                                </a>
+                                            }
+                                            @if (User.IsInRole("admin"))
+                                            {
+                                                <a style="display: inline-flex; border: dashed; border-radius: 10px; border-color: gray; color: red; font-size: 15px" id="confirmedmaincommentdeletebtn" mainCommentId="@item.id" pagenumber="@ViewBag.PageNumber" postId="@Model.id">
+                                                    <i class="icofont-bin nav-link"></i>
+                                                </a>
+                                                @if (await userManager.IsInRoleAsync(await userManager.FindByIdAsync(item.applicationUser.Id), "admin") == false)
+                                                {
+                                                    <a style="display: inline-flex; border: dashed; border-radius: 10px; border-color: gray; color: red; font-size: 15px" id="confirmedmaincommentbanbtn" userId="@item.applicationUser.Id" pagenumber="@ViewBag.PageNumber" postId="@Model.id">
+                                                        <i class="icofont-ban nav-link"></i>
+                                                    </a>
+                                                }
+                                            }
+                                        </div>
+
+                                        <div class="comment-metadata">
+                                            <a>
+                                                @{
+                                                    TimeSpan timeSpan = new TimeSpan();
+                                                    timeSpan = DateTime.Now - item.creationTime;
+
+                                                    if (timeSpan.Days >= 365)
+                                                    {
+                                                        <time>@($"{timeSpan.Days / 365} سال پیش")</time>
+                                                    }
+                                                    else
+                                                    {
+                                                        if (timeSpan.Days >= 30 && timeSpan.Days < 365)
+                                                        {
+                                                            <time>@($"{timeSpan.Days / 30} ماه پیش")</time>
+                                                        }
+                                                        else
+                                                        {
+                                                            if (timeSpan.Days >= 1 && timeSpan.Days < 30)
+                                                            {
+                                                                <time>@($"{timeSpan.Days} روز پیش")</time>
+                                                            }
+                                                            else
+                                                            {
+                                                                if (timeSpan.Hours >= 1 && timeSpan.Hours < 24)
+                                                                {
+                                                                    <time>@($"{timeSpan.Hours} ساعت پیش")</time>
+                                                                }
+                                                                else
+                                                                {
+                                                                    if (timeSpan.Minutes >= 1 && timeSpan.Minutes < 60)
+                                                                    {
+                                                                        <time>@($"{timeSpan.Minutes} دقیقه پیش")</time>
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        if (timeSpan.Seconds > 60 && timeSpan.Seconds >= 1)
+                                                                        {
+                                                                            <time>@($"{timeSpan.Seconds} لحظاتی پیش")</time>
+                                                                        }
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            </a>
+                                        </div>
+                                    </footer>
+                                    <div class="comment-content">
+                                        <p style="white-space:pre-wrap">@item.content</p>
+                                    </div>
+
+                                    @if (User.Identity.IsAuthenticated)
+                                    {
+                                        <div class="reply" postId="@Model.id" mainCommentId="@item.id">
+                                            <a href="#" id="commentreply" class="comment-reply-link">پاسخ دادن</a>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <br />
+                                        <p>برای پاسخ دادن <a style="display: inline" asp-action="login" asp-controller="account">وارد</a> شوید.</p>
+                                    }
+                                </article>
+
+                                @foreach (var item2 in ViewData["subComments"] as List<SubComment>)
+                                {
+                                    if (item2.mainCommentId == item.id)
+                                    {
+                                        <ol class="children">
+                                            <li class="comment">
+                                                <article class="comment-body">
+                                                    <footer class="comment-meta">
+                                                        <div class="comment-author vcard">
+                                                            <a asp-action="showprofile" asp-controller="account" asp-route-id="@item2.applicationUser.Id" target="_blank">
+                                                                @if (item2.applicationUser.smallAvatar != null)
+                                                                {
+                                                                    <img src="@($"data:image/jpeg;base64,{Convert.ToBase64String(item2.applicationUser.smallAvatar)}")" class="avatar" alt="image">
+                                                                }
+                                                                else
+                                                                {
+                                                                    <img src="~/assets/img/user.png" class="avatar" alt="image">
+                                                                }
+                                                            </a>
+
+                                                            @if (item2.applicationUser.firstName != null && item2.applicationUser.lastName != null)
+                                                            {
+                                                                <a style="display: inline-flex" asp-action="showprofile" asp-controller="account" asp-route-id="@item2.applicationUser.Id" target="_blank">
+                                                                    <b class="fn">@($"{item2.applicationUser.firstName} {item2.applicationUser.lastName}")</b>
+                                                                </a>
+                                                            }
+                                                            else
+                                                            {
+                                                                <a style="display: inline-flex" asp-action="showprofile" asp-controller="account" asp-route-id="@item2.applicationUser.Id" target="_blank">
+                                                                    <b class="fn">@item2.applicationUser.UserName</b>
+                                                                </a>
+                                                            }
+
+                                                            @if (User.IsInRole("admin"))
+                                                            {
+                                                                <a style="display: inline-flex; border: dashed; border-radius: 10px; border-color: gray; color: red; font-size: 15px" id="confirmedsubcommentdeletebtn" subCommentId="@item2.id" pagenumber="@ViewBag.PageNumber" postId="@Model.id">
+                                                                    <i class="icofont-bin nav-link"></i>
+                                                                </a>
+
+                                                                @if (await userManager.IsInRoleAsync(await userManager.FindByIdAsync(item2.applicationUser.Id), "admin") == false)
+                                                                {
+                                                                    <a style="display: inline-flex; border: dashed; border-radius: 10px; border-color: gray; color: red; font-size: 15px" id="confirmedsubcommentbanbtn" userId="@item2.applicationUser.Id" pagenumber="@ViewBag.PageNumber" postId="@Model.id">
+                                                                        <i class="icofont-ban nav-link"></i>
+                                                                    </a>
+                                                                }
+                                                            }
+                                                        </div>
+
+                                                        <div class="comment-metadata">
+                                                            <a>
+                                                                @{
+                                                                    TimeSpan timespan2 = new TimeSpan();
+                                                                    timespan2 = DateTime.Now - item.creationTime;
+
+                                                                    if (timespan2.Days >= 365)
+                                                                    {
+                                                                        <time>@($"{timespan2.Days / 365} سال پیش")</time>
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        if (timespan2.Days >= 30 && timespan2.Days < 365)
+                                                                        {
+                                                                            <time>@($"{timespan2.Days / 30} ماه پیش")</time>
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            if (timespan2.Days >= 1 && timespan2.Days < 30)
+                                                                            {
+                                                                                <time>@($"{timespan2.Days} روز پیش")</time>
+                                                                            }
+                                                                            else
+                                                                            {
+                                                                                if (timespan2.Hours >= 1 && timespan2.Hours < 24)
+                                                                                {
+                                                                                    <time>@($"{timespan2.Hours} ساعت پیش")</time>
+                                                                                }
+                                                                                else
+                                                                                {
+                                                                                    if (timespan2.Minutes >= 1 && timespan2.Minutes < 60)
+                                                                                    {
+                                                                                        <time>@($"{timespan2.Minutes} دقیقه پیش")</time>
+                                                                                    }
+                                                                                    else
+                                                                                    {
+                                                                                        if (timespan2.Seconds > 60 && timespan2.Seconds >= 1)
+                                                                                        {
+                                                                                            <time>@($"{timespan2.Seconds} لحظاتی پیش")</time>
+                                                                                        }
+                                                                                    }
+                                                                                }
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                }
+                                                            </a>
+                                                        </div>
+                                                    </footer>
+
+                                                    <div class="comment-content">
+                                                        <p style="white-space: pre-wrap">@item2.content</p>
+                                                    </div>
+
+                                                    @if (User.Identity.IsAuthenticated)
+                                                    {
+                                                        <div class="reply" postId="@Model.id" mainCommentId="@item.id" subCommentId="@item2.id">
+                                                            <a href="#" id="subcommentreply" class="comment-reply-link">پاسخ دادن</a>
+                                                        </div>
+                                                    }
+                                                    else
+                                                    {
+                                                        <br />
+                                                        <p>برای پاسخ دادن <a style="display: inline" asp-action="login" asp-controller="account">وارد</a> شوید.</p>
+                                                    }
+                                                </article>
+                                            </li>
+                                        </ol>
+                                    }
+                                }
+                            }
+                        </li>
+                    </ol>
+                </div>
+
+                <cs-pager asp-action="PostShowBridge" asp-controller="post" asp-route-id="@Model.id"
+                          cs-pager-li-current-class="page-item active"
+                          cs-pager-li-other-class="page-item"
+                          cs-pager-li-non-active-class="page-item disabled"
+                          cs-pager-link-current-class="page-link"
+                          cs-pager-link-other-class="page-link"
+                          cs-paging-pagenumber="@ViewBag.PageNumber"
+                          cs-paging-totalitems="@ViewBag.TotalItems"
+                          cs-paging-pagesize="@ViewBag.PageSize"
+                          asp-route-listId=""
+                          asp-route-sortmode="">
+                </cs-pager>
+            </div>
+
+            <div class="col-lg-4 col-md-12">
+                <aside class="widget-area" id="secondary">
+                    <section class="widget widget_search">
+                        <form asp-action="searchbridge" asp-controller="post" class="search-form">
+                            <label>
+                                <span class="screen-reader-text">جستجو کنید:</span>
+                                <input name="search" type="search" class="search-field" placeholder="جستجو کنید ...">
+                            </label>
+                            <input type="submit" class="search-submit" value="جستجو">
+                        </form>
+                    </section>
+
+                    <section class="all-category-news ptb-40 pt-0" style="margin-top: 30px">
+                        <div class="container">
+                            <div class="row">
+                                <div class="featured-news">
+                                    <div class="section-title">
+                                        <h2>پست های اخیر</h2>
+                                    </div>
+
+                                    @foreach (var item in ViewData["newestpost"] as List<Post>)
+                                    {
+                                        <div class="single-featured-news">
+                                            <a asp-action="postshowbridge" asp-controller="post" asp-route-id="@item.id"><img src="@($"data:image/jpeg;base64,{Convert.ToBase64String(item.mainImg)}")" alt="image"></a>
+
+                                            <div class="news-content">
+                                                <ul>
+                                                    <li>
+                                                        <i class="icofont-user-suited"></i>
+                                                        توسط
+                                                        <a asp-action="showprofile" asp-controller="account" asp-route-id="@Model.applicationUser.Id" target="_blank">
+                                                            @($"{item.applicationUser.firstName} {item.applicationUser.lastName}")
+                                                        </a>
+                                                    </li>
+                                                    <li><i class="icofont-calendar"></i> @item.pPostCreation</li>
+                                                </ul>
+                                                <h3><a asp-action="postshowbridge" asp-controller="post" asp-route-id="@item.id">@item.topic</a></h3>
+                                            </div>
+
+                                            <div class="tags">
+                                                <a asp-action="showcategorybridge" asp-controller="home" asp-route-id="@item.category.id">@item.category.Pname</a>
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section class="widget widget_categories">
+                        <h3 class="widget-title">دسته بندی</h3>
+
+                        <ul>
+                            <li><a asp-action="showcategorybridge" asp-controller="home" asp-route-id="@Model.category.id">@Model.category.Pname</a></li>
+                        </ul>
+                    </section>
+
+                    <section class="widget widget_tag_cloud">
+                        <h3 class="widget-title">برچسب ها</h3>
+                        <div class="tagcloud">
+                            @(ViewData["Keywords"] = "")
+                            @foreach (var item in ViewData["tags"] as List<PostTagId>)
+                            {
+                                <a itemprop="keywords" asp-action="showtagbridge" asp-controller="home" asp-route-id="@item.Tag.id">
+                                    @item.Tag.Pname
+                                </a>
+                                ViewData["Keywords"] += $"{item.Tag.Pname}, ";
+                            }
+                        </div>
+                    </section>
+                </aside>
+            </div>
+        </div>
+    </div>
+</section>
+
+<div class="modal fade" id="confirmedmaincommentdeletemodal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header" style="background-color:red">
+                <h3>حذف کامنت</h3>
+            </div>
+            <div class="modal-body">
+                <p>آیا مایل به حذف کامنت هستید؟</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-danger" data-dismiss="modal">خیر</button>
+                <a href="" id="confirmedmaincommentdelete" class="btn btn-success" style="margin-right:10px">بله</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="confirmedmaincommentbanmodal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header" style="background-color:red">
+                <h3>مسدود کردن کاربر</h3>
+            </div>
+            <div class="modal-body">
+                <p>آیا مایل به مسدود کردن کاربر هستید؟</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-danger" data-dismiss="modal">خیر</button>
+                <a href="" id="confirmedmaincommentban" class="btn btn-success" style="margin-right:10px">بله</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(function () {
+        $(commentreply).click(function (event) {
+            event.preventDefault()
+
+            var postId = $(this).parent().attr("postId")
+            var mainCommentId = $(this).parent().attr("mainCommentId")
+
+            $(this).parent().html(`<textarea class="form-control" id="mcontent" cols="45" rows="5" placeholder="دیدگاه خود را وارد کنید..."></textarea>
+                          <div class="reply">
+                             <a id="msubmit" class="comment-reply-link">ارسال</a>
+                          </div>`
+            )
+
+            $(mcontent).keyup(function () {
+                var content = $(this)
+
+                $(msubmit).click(function () {
+                    if (content.val() != '') {
+                        $(this).attr("href", `/post/commentreplyconfirm?mainCommentId=${mainCommentId}&postId=${postId}&content=${content.val().replace(/\n/g, '<br>')}`)
+                    }
+                })
+            })
+        })
+    })
+
+    $(function () {
+        $(subcommentreply).click(function (event) {
+            event.preventDefault()
+
+            var postId = $(this).parent().attr("postId")
+            var mainCommentId = $(this).parent().attr("mainCommentId")
+            var subCommentId = $(this).parent().attr("subCommentId")
+
+            $(this).parent().html(`<textarea class="form-control" id="scontent" cols="45" rows="5" placeholder="دیدگاه خود را وارد کنید..."></textarea>
+                          <div class="reply">
+                             <a id="ssubmit" class="comment-reply-link">ارسال</a>
+                          </div>`
+            )
+
+            $(scontent).keyup(function () {
+                var content = $(this)
+
+                $(ssubmit).click(function () {
+                    if (content.val() != '') {
+                        $(this).attr("href", `/post/replytoreplyconfirm?postId=${postId}&mainCommentId=${mainCommentId}&subCommentId=${subCommentId}&content=${content.val().replace(/\n/g, '<br>')}`)
+                    }
+                })
+            })
+        })
+    })
+
+    $(function () {
+        $(confirmedmaincommentdeletebtn).click(function () {
+            var mainCommentId = $(this).attr("mainCommentId")
+            var pagenumber = $(this).attr("pagenumber")
+            var postId = $(this).attr("postId")
+
+            $(confirmedmaincommentdeletemodal).modal()
+
+            $(confirmedmaincommentdelete).attr('href', `/post/confirmedmaincommentdelete?mainCommentId=${mainCommentId}&pagenumber=${pagenumber}&postId=${postId}`)
+        })
+    })
+
+    $(function () {
+        $(confirmedsubcommentdeletebtn).click(function () {
+            var subCommentId = $(this).attr("subCommentId")
+            var pagenumber = $(this).attr("pagenumber")
+            var postId = $(this).attr("postId")
+
+            $(confirmedmaincommentdeletemodal).modal()
+
+            $(confirmedmaincommentdelete).attr('href', `/post/confirmedsubcommentdelete?subCommentId=${subCommentId}&pagenumber=${pagenumber}&postId=${postId}`)
+        })
+    })
+
+    $(function () {
+        $(confirmedmaincommentbanbtn).click(function () {
+            var userId = $(this).attr("userId")
+            var pagenumber = $(this).attr("pagenumber")
+            var postId = $(this).attr("postId")
+
+            $(confirmedmaincommentbanmodal).modal()
+
+            $(confirmedmaincommentban).attr('href', `/account/confirmedmaincommentban?userId=${userId}&pagenumber=${pagenumber}&postId=${postId}`)
+        })
+    })
+
+    $(function () {
+        $(confirmedsubcommentbanbtn).click(function () {
+            var userId = $(this).attr("userId")
+            var pagenumber = $(this).attr("pagenumber")
+            var postId = $(this).attr("postId")
+
+            $(confirmedmaincommentbanmodal).modal()
+
+            $(confirmedmaincommentban).attr('href', `/account/confirmedsubcommentban?userId=${userId}&pagenumber=${pagenumber}&postId=${postId}`)
+        })
+    })
+</script>

@@ -1,0 +1,18 @@
+﻿
+@model List<Post>
+<div class="breaking-news">
+    <div class="container">
+        <div class="breaking-news-content clearfix">
+            <h6 class="breaking-title"><i class="icofont-flash"></i> خبر فوری:</h6>
+
+            <div class="breaking-news-slides owl-carousel owl-theme">
+                @foreach (var item in Model)
+                {
+                    <div class="single-breaking-news">
+                        <p><a asp-action="PostShowBridge" asp-controller="post" asp-route-id="@item.id">@item.topic</a></p>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>

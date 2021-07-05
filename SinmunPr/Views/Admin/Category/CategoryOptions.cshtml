@@ -1,0 +1,117 @@
+﻿
+@{
+    ViewData["Title"] = "اضاف، حذف و ویرایش دسته بندی ها";
+}
+
+@model List<Category>
+<section class="news-details-area pb-40">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12 col-md-12">
+                <div class="news-details">
+                    <div class="comments-area">
+                        <div class="comment-respond">
+                            <h3 style="margin-bottom:25px" class="comment-reply-title">افزودن دسته بندی جدید</h3>
+                            <form asp-action="categoryinsert" asp-controller="post" class="comment-form" novalidate="novalidate">
+
+                                <p style="margin-bottom:50px" class="comment-form-email">
+                                    <label>نام انگلیسی دسته بندی</label>
+                                    <input name="Ename" type="text">
+                                </p>
+                                <p style="margin-bottom:50px" class="comment-form-email">
+                                    <label>نام فارسی دسته بندی</label>
+                                    <input name="Pname" type="text">
+                                </p>
+
+                                <div class="modal fade" id="categoryinsertmodal">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header" style="background-color:red">
+                                                <h3>ثبت دسته بندی</h3>
+                                            </div>
+                                            <div class="modal-body">
+                                                <p>آیا مایل به ثبت دسته بندی هستید؟</p>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button class="btn btn-danger" data-dismiss="modal">خیر</button>
+                                                <button class="btn btn-success" style="margin-right:10px">بله</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                            <p class="form-submit">
+                                <input type="submit" id="categoryinsertbtn" class="submit" value="ثبت دسته بندی">
+                            </p>
+                        </div>
+
+                        <div class="comment-respond">
+                            <h3 style="margin-bottom:25px" class="comment-reply-title">حذف و ویرایش دسته بندی</h3>
+                            <table class="table table-bordered table-striped">
+                                <thead>
+                                    <tr>
+                                        <td>#</td>
+                                        <th>نام فارسی</th>
+                                        <th>نام انگلیسی</th>
+                                        <th>موجود در صفحه اصلی</th>
+                                        <th>عملیات</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in Model)
+                                    {
+                                        <tr>
+                                            <td>@item.id</td>
+                                            <td>@item.Pname</td>
+                                            <td>@item.Ename</td>
+                                            <td>
+                                                <input type="checkbox" @(item.IsInMainPage == true ? "checked" : "") disabled/>
+                                            </td>
+                                            <td>
+                                                <button id="categorydeletebtn" categoryId="@item.id" class="btn btn-danger">حذف</button>
+                                                <a asp-action="categoryupdate" asp-controller="admin" asp-route-id="@item.id"
+                                                   style="margin-right:10px" class="btn btn-warning">ویرایش</a>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<div class="modal fade" id="categorydeletemodal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header" style="background-color:red">
+                <h3>حذف دسته بندی</h3>
+            </div>
+            <div class="modal-body">
+                <p>آیا مایل به حذف دسته بندی هستید؟ (با پاک کردن دسته بندی تمام پست ها و کامنت های مربوطه حذف خواهند شد!)</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-danger" data-dismiss="modal">خیر</button>
+                <a href="" id="categorydeletebtnconfirm" class="btn btn-success" style="margin-right:10px">بله</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(function () {
+        $(categoryinsertbtn).click(function () {
+            $(categoryinsertmodal).modal()
+        })
+
+        $(categorydeletebtn).click(function () {
+            var categoryId = $(this).attr("categoryId")
+
+            $(categorydeletemodal).modal()
+            $(categorydeletebtnconfirm).attr("href", `/post/categorydelete?id=${categoryId}`)
+        })
+    })
+</script>

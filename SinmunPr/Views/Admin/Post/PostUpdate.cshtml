@@ -1,0 +1,267 @@
+﻿@{
+    ViewData["Title"] = "ویرایش پست";
+}
+
+@model Post
+<section class="news-details-area pb-40">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12 col-md-12">
+                <div class="news-details">
+                    <div class="comments-area">
+                        <div class="comment-respond">
+                            <h3 style="margin-bottom:25px" class="comment-reply-title">ویرایش خبر</h3>
+                            <form class="comment-form" asp-action="postupdateconfirm" asp-controller="post" asp-route-id="@Model.id" method="post" enctype="multipart/form-data">
+                                <label>دسته بندی*</label>
+                                <select name="categoryId" style="margin-bottom:15px" class="form-control" id="url" required>
+                                    <option value="@Model.category.id">@Model.category.Pname</option>
+                                    @foreach (var item in ViewData["categories"] as List<Category>)
+                                    {
+                                        if (item.id != Model.category.id)
+                                        {
+                                            <option value="@item.id">@item.Pname</option>
+                                        }
+                                    }
+                                </select>
+                                <label>عکس خبر*</label>
+                                <p class="comment-form-url custom-file">
+                                    <input name="mainImg" value="@Model.mainImg" class="custom-file-input" type="file" id="topicimginputupdate">
+                                    <label id="imglabel" class="custom-file-label"></label>
+                                </p>
+                                <p class="container">
+                                    <img id="topicimgupdate" width="400" src="@($"data:image/jpeg;base64,{Convert.ToBase64String(Model.mainImg)}")" />
+                                </p>
+                                <p class="comment-form-url">
+                                    <label for="url">عنوان خبر*</label>
+                                    <input value="@Model.topic" name="topic" id="url" class="form-control">
+                                </p>
+                                <p class="comment-form-comment">
+                                    <label>توضیح کوتاه خبر*</label>
+                                    <textarea name="shortDes" cols="45" rows="5" required>@Model.shortDes</textarea>
+                                </p>
+                                <p class="comment-form-comment">
+                                    <label>محتوای خبر*</label>
+                                    <textarea name="content" cols="45" rows="5" required>@Model.content</textarea>
+                                </p>
+
+                                @if (Model.sources.Count() != 0)
+                                {
+                                    @foreach (var item in ViewData["sources"] as List<Source>)
+                                    {
+                                        <a id="sourcedelete" sourceId="@item.id" postId="@Model.id"><i title="حذف منبع" class="icofont-close-circled icofont-1x" style="color:red"></i></a>
+                                        <p style="margin-bottom:50px" class="comment-form-email">
+                                            <label>لینک منبع</label>
+                                            <input value="@item.link" class="form-control" disabled />
+                                        </p>
+                                        <p style="margin-bottom:50px" class="comment-form-email form-group">
+                                            <label>  نام منبع</label>
+                                            <input value="@item.name" class="form-control" disabled />
+                                        </p>
+                                    }
+                                }
+                                @for (int i = 1; i <= 4 - Model.sources.Count(); i++)
+                                {
+                                    <p style="margin-bottom:50px" class="comment-form-email">
+                                        <label>نام منبع(@(i))</label>
+                                        <input name="sourceName" class="form-control" />
+                                    </p>
+                                    <p style="margin-bottom:50px" class="comment-form-email">
+                                        <label>لینک منبع(@(i))</label>
+                                        <input name="sourceLink" class="form-control" />
+                                    </p>
+                                }
+
+                                <p class="comment-form-url">
+                                    @if (Model.postTagIds.Count() != 0)
+                                    {
+                                        <aside class="widget-area" style="margin-bottom:15px" id="secondary">
+                                            <section class="widget widget_tag_cloud">
+                                                <label>حذف برچسب</label>
+                                                <div class="tagcloud">
+                                                    @foreach (var item in ViewData["posttagid"] as List<PostTagId>)
+                                                    {
+                                                        <a href="#" id="tagdeletebtn" tagId="@item.id" postId="@Model.id">@item.Tag.Pname</a>
+                                                    }
+                                                </div>
+                                            </section>
+                                        </aside>
+                                    }
+                                    <label>افزودن برچسب</label>
+                                    <select name="tags" class="form-control" multiple>
+                                        <option value="-1">-- برچسب های مورد نظر را انتخاب کنید --</option>
+                                        @foreach (var item in ViewData["tags"] as List<Tag>)
+                                        {
+                                            <option value="@item.id">@item.Pname</option>
+                                        }
+                                    </select>
+                                </p>
+                                <p class="form-group">
+                                    <label class="remember-me">
+                                        <input name="IsInImmediate" type="checkbox" checked="@(Model.IsInImmediate == true)" />
+                                        قرار گیری خبر در لیست خبر های فوری(بالای سایت)
+                                    </label>
+                                </p>
+                                <p class="form-group">
+                                    <label class="remember-me">
+                                        <input name="IsInEditorsChoice" type="checkbox" checked="@(Model.IsInEditorsChoice == true)" />
+                                        قرار گیری خبر در قسمت انتخاب سردبیر
+                                    </label>
+                                </p>
+                                <p class="form-group">
+                                    <label class="remember-me">
+                                        <input name="IsInImportant" type="checkbox" checked="@(Model.IsInImportant == true)" />
+                                        قرار گیری به عنوان خبر مهم
+                                    </label>
+                                </p>
+                                <p class="form-group">
+                                    <label class="remember-me">
+                                        <input name="IsInTopSlideBar" type="checkbox" checked="@(Model.IsInTopSlideBar == true)" />
+                                        قرار گیری خبر در اسلاید بار بزرگ اول سایت
+                                    </label>
+                                </p>
+                                <p class="form-group">
+                                    <label class="remember-me">
+                                        <input name="IsInDedicated" type="checkbox" checked="@(Model.IsInDedicated == true)" />
+                                        قرار گیری در قسمت خبر های اختصاصی
+                                    </label>
+                                </p>
+                                <div class="modal fade" id="articleupdatemodal">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header" style="background-color:red">
+                                                <h3>ثبت ویرایش</h3>
+                                            </div>
+                                            <div class="modal-body">
+                                                <p>آیا مایل به ثبت ویرایش هستید؟</p>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button class="btn btn-danger" data-dismiss="modal">خیر</button>
+                                                <button class="btn btn-success" style="margin-right:10px">بله</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                            <p class="form-submit">
+                                <input type="submit" id="articleupdatebutton" class="submit" value="ثبت ویرایش">
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<div class="modal fade" id="sourcedeletemodal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header" style="background-color:red">
+                <h3>حذف منبع</h3>
+            </div>
+            <div class="modal-body">
+                <p>آیا مایل به حذف منبع هستید؟</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-danger" data-dismiss="modal">خیر</button>
+                <a href="" id="sourcedeleteconfirm" class="btn btn-success" style="margin-right:10px">بله</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="tagdeletemodal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header" style="background-color:red">
+                <h3>حذف برپسب</h3>
+            </div>
+            <div class="modal-body">
+                <p>آیا مایل به حذف برچسب هستید؟</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-danger" data-dismiss="modal">خیر</button>
+                <a href="" id="tagdeleteconfirm" class="btn btn-success" style="margin-right:10px">بله</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(function () {
+        tinymce.init({
+            selector: 'textarea',
+            plugins: 'advlist autolink autosave link image lists charmap print preview hr anchor pagebreak spellchecker searchreplace wordcount visualblocks visualchars code fullscreen insertdatetime media nonbreaking save table contextmenu directionality emoticons template textcolor paste textcolor colorpicker',
+            toolbar: 'a11ycheck numlist bullist tabfocus addcomment showcomments casechange checklist code formatpainter pageembed permanentpen table',
+            toolbar_mode: 'floating',
+            tinycomments_mode: 'embedded',
+            tinycomments_author: 'Author name',
+            forced_root_block: "",
+            force_br_newlines: true,
+            force_p_newlines: false,
+            image_title: true,
+            automatic_uploads: true,
+            file_picker_types: 'image',
+            file_picker_callback: function (cb, value, meta) {
+                var input = document.createElement('input');
+                input.setAttribute('type', 'file');
+                input.setAttribute('accept', 'image/*');
+
+                input.onchange = function () {
+                    var file = this.files[0];
+
+                    var reader = new FileReader();
+                    reader.onload = function () {
+                        var id = 'blobid' + (new Date()).getTime();
+                        var blobCache = tinymce.activeEditor.editorUpload.blobCache;
+                        var base64 = reader.result.split(',')[1];
+                        var blobInfo = blobCache.create(id, file, base64);
+                        blobCache.add(blobInfo);
+
+                        cb(blobInfo.blobUri(), { title: file.name });
+                    };
+                    reader.readAsDataURL(file);
+                };
+
+                input.click();
+            },
+        });
+
+        $(articleupdatebutton).click(function () {
+            $(articleupdatemodal).modal()
+        })
+
+        $(sourcedelete).click(function () {
+            var sourceId = $(this).attr("sourceId")
+            var postId = $(this).attr("postId")
+
+            $(sourcedeletemodal).modal()
+
+            $(sourcedeleteconfirm).attr("href", `/post/sourcedelete?sourceId=${sourceId}&postId=${postId}`)
+        })
+
+
+        $(topicimginputupdate).change(function () {
+            var reader = new FileReader()
+
+            reader.readAsDataURL(topicimginputupdate.files[0])
+            reader.onloadend = (x) => {
+
+                topicimgupdate.src = x.target.result
+            }
+        })
+    })
+
+    $(function () {
+        $(tagdeletebtn).click(function (event) {
+            event.preventDefault()
+
+            var tagId = $(this).attr("tagId")
+            var postId = $(this).attr("postId")
+
+            $(tagdeletemodal).modal()
+
+            $(tagdeleteconfirm).attr("href", `/post/tagpostdelete?tagId=${tagId}&postId=${postId}`)
+        })
+    })
+</script>

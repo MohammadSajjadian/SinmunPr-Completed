@@ -1,0 +1,37 @@
+﻿
+@{
+    ViewData["Title"] = "دسته بندی ها";
+}
+
+@model List<Category>
+<section class="gallery-area pb-40">
+    <div class="container">
+        <div class="shorting-menu">
+            <button class="filter" data-filter="all">همه</button>
+            @foreach (var item in Model)
+            {
+                <button class="filter active" data-filter=".@item.Ename">@item.Pname</button>
+            }
+        </div>
+    </div>
+
+    <div class="container-fluid">
+        <div class="shorting" id="MixItUpA7C2F6">
+            <div class="row">
+                @foreach (var item in ViewData["cPosts"] as List<Post>)
+                {
+                    <div class="col-lg-4 col-sm-6 col-md-6 mix @item.category.Ename" data-bound="" style="display: inline-block;">
+                        <div class="single-gallery-box">
+                            <img src="@($"data:image/jpeg;base64,{Convert.ToBase64String(item.mainImg)}")" alt="image">
+
+                            <div class="gallery-content">
+                                <h3><a asp-action="PostShowBridge" asp-controller="post" asp-route-id="@item.id">@item.topic</a></h3>
+                                <span class="category"><a asp-action="showcategorybridge" asp-route-id="@item.category.id">@item.category.Pname</a></span>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</section>

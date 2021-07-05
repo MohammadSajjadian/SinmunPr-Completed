@@ -1,0 +1,27 @@
+﻿
+@model List<Post>
+<div class="col-lg-4 col-md-6">
+    <div class="single-footer-widget">
+        <h3>اخبار وبلاگ</h3>
+
+        @foreach (var item in Model)
+        {
+            <div class="footer-latest-news-list">
+                <div class="media latest-news-media align-items-center">
+                    <a asp-action="postshowbridge" asp-controller="post" asp-route-id="@item.id">
+                        <img src="@($"data:image/jpeg;base64,{Convert.ToBase64String(item.footerImg)}")" alt="image">
+                    </a>
+
+                    <div class="content">
+                        <ul>
+                            <li><i class="icofont-calendar"></i> @item.pPostCreation</li>
+                            <li><a><i class="icofont-comment"></i> @(item.mainComments.Where(x => x.IsConfirm == true).Count() + item.mainComments.Sum(x => x.subComments.Where(x => x.IsConfirm == true).Count()))</a></li>
+                        </ul>
+
+                        <h3><a asp-action="postshowbridge" asp-controller="post" asp-route-id="@item.id">@item.topic</a></h3>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
